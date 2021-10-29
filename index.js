@@ -20,15 +20,38 @@ async function run() {
         await client.connect();
         const database = client.db('deliveryServiceAllData');
         const deliveryCollection = database.collection('delivery-order-data');
+        const exclusiveServiceCollection = database.collection('exclusive-service-data');
 
         // POST API FOR ADD DELIVERY
         app.post('/booking', async (req, res) => {
             const newOrder = req.body;
             console.log('hitting the post', newOrder);
-            // const result = await deliveryCollection.insertOne(newOrder);
-            // console.log(result);
-            res.send('hitted') 
+            const result = await deliveryCollection.insertOne(newOrder);
+            console.log(result);
+            res.json(result)
         })
+
+        // POST API FOR get user own offers
+        app.post('/user-offer', async (req, res) => {
+            const newService = req.body;
+            console.log('hitting the post', newService);
+            const result = await exclusiveServiceCollection.insertOne(newService);
+            console.log(result);
+            res.json(result)
+        })
+
+        // get API FOR get user own offers
+        app.get('/user-offer', async (req, res) => {
+            const cursor = exclusiveServiceCollection.find({});
+            const getOfferData = await cursor.toArray();
+            res.send(getOfferData)
+        })
+
+
+        // get all delivery order list
+
+        // get a user delivery order history
+
     }
     finally {
         // await client.close();
