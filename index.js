@@ -1,5 +1,3 @@
-// user: delivery-all-data
-//  pass: v2yIdbPoAXQitaMY
 const { MongoClient } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
@@ -49,8 +47,44 @@ async function run() {
 
 
         // get all delivery order list
+        app.get('/all-orders', async (req, res) => {
+            const cursor = deliveryCollection.find({});
+            const getAllOrder = await cursor.toArray();
+            res.send(getAllOrder);
+        })
 
-        // get a user delivery order history
+        // get a single user delivery order history
+        app.get('/my-orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { identifyUser: id };
+            const service = await deliveryCollection.find(query);
+            const result = await service.toArray();
+            res.json(result)
+        })
+
+        // // delete a order collection
+        // DELETE API
+        app.delete('/my-orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await deliveryCollection.deleteOne(query);
+            res.json(result);
+        })
+
+        // Update pending status (put)
+        app.put('/update-order/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            // this option instructs the method to create a document if no documents match the filter
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    orderStatus: 'approved'
+                },
+            };
+            const result = await deliveryCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
 
     }
     finally {
