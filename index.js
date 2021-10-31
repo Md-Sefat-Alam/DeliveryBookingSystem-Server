@@ -38,10 +38,17 @@ async function run() {
             res.json(result)
         })
 
-        // get API FOR get user own offers
+        // get API FOR get user own offers all
         app.get('/user-offer', async (req, res) => {
             const cursor = exclusiveServiceCollection.find({});
             const getOfferData = await cursor.toArray();
+            res.send(getOfferData)
+        })
+
+        // get API FOR get user own offer single by id
+        app.get('/user-offer/:id', async (req, res) => {
+            const id = req.params.id;
+            const getOfferData = await exclusiveServiceCollection.findOne({ _id: ObjectId(id) });
             res.send(getOfferData)
         })
 
